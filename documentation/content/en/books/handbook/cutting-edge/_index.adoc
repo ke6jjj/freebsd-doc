@@ -281,7 +281,10 @@ If the system is running a custom kernel, make sure that a copy of the [.filenam
 Refer to <<freebsd-update-custom-kernel-9x>> for instructions on how to get a copy of the [.filename]#GENERIC# kernel.
 ====
 
-Before upgrading to a new version, ensure the existing FreeBSD installation is up to date with respect to security and errata patches:
+==== Preparing the current installation
+
+Before upgrading to a new version, it is important to ensure the existing FreeBSD installation is up to date with respect to security and errata patches. Running the
+follwing commands will update the current installation to the latest _patch_ release available for it:
 
 [source,shell]
 ....
@@ -289,14 +292,16 @@ Before upgrading to a new version, ensure the existing FreeBSD installation is u
 # freebsd-update install
 ....
 
-The following command, when run on a FreeBSD 13.1 system, will upgrade it to FreeBSD 13.2:
+==== Starting a major or minor upgrade
+
+After ensuring that the current installation is patched, the upgrade can begin. The following command, when run on a FreeBSD 13.1 system, will upgrade it to FreeBSD 13.2:
 
 [source,shell]
 ....
 # freebsd-update -r 13.2-RELEASE upgrade
 ....
 
-After the command has been received, `freebsd-update` will evaluate the configuration file and current system in an attempt to gather the information necessary to perform the upgrade.
+At this stage `freebsd-update` will evaluate the configuration file and current system in an attempt to gather the information necessary to perform the upgrade.
 A screen listing will display which components have and have not been detected.
 For example:
 
@@ -345,19 +350,16 @@ A failed or ignored merge will cause the process to abort.
 Users may wish to make a backup of [.filename]#/etc# and manually merge important files,
 such as [.filename]#master.passwd# or [.filename]#group# at a later time.
 
-[NOTE]
-====
-The system is not being altered yet as all patching and merging is happening in another directory.
-Once all patches have been applied successfully,
-all configuration files have been merged and it seems the process will go smoothly,
-the changes can be committed to disk by the user using the following command:
+==== Commiting to the upgrade
+
+At this stage the system has not yet been altered. Instead, all patching and merging for the upgrade has been performed in a separate, staging directory.
+To continue the upgrade these staging files will need to be committed to their final locations on disk.
+Assuming that all patches have been applied successfully and all configuration files have been merged, the changes can be committed to disk using the following command:
 
 [source,shell]
 ....
 # freebsd-update install
 ....
-
-====
 
 The kernel and kernel modules will be patched first.
 If the system is running with a custom kernel,
