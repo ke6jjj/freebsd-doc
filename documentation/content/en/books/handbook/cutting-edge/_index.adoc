@@ -281,10 +281,23 @@ If the system is running a custom kernel, make sure that a copy of the [.filenam
 Refer to <<freebsd-update-custom-kernel-9x>> for instructions on how to get a copy of the [.filename]#GENERIC# kernel.
 ====
 
+==== Overview of upgrade steps
+
+The process of a major or minor upgrade is performed in several steps and it is helpful to remember them 
+
+. Patching the current system
+. Starting the upgrade process
+. Merging configuration files
+. Committing changes to the kernel and modules
+. Rebooting
+. Committing changes to "userland" (binaries) and configuration files
+. Upgrading installed software (optional)
+. Removing old libraries
+
 ==== Preparing the current installation
 
-Before upgrading to a new version, it is important to ensure the existing FreeBSD installation is up to date with respect to security and errata patches. Running the
-follwing commands will update the current installation to the latest _patch_ release available for it:
+Before upgrading to a new version, it is important to ensure the existing FreeBSD installation is up to date with respect to security and errata patches.
+Running the following commands will update the current installation to the latest _patch_ release available for it:
 
 [source,shell]
 ....
@@ -294,7 +307,9 @@ follwing commands will update the current installation to the latest _patch_ rel
 
 ==== Starting a major or minor upgrade
 
-After ensuring that the current installation is patched, the upgrade can begin. The following command, when run on a FreeBSD 13.1 system, will upgrade it to FreeBSD 13.2:
+After ensuring that the current installation is patched, the upgrade can begin.
+The first step in the upgrade is getting `freebsd-update` to begin the upgrade by issuing an "upgrade" command and specifying the desired operating system version to upgrade to.
+The following command, when run on a FreeBSD 13.1 system, will upgrade it to FreeBSD 13.2:
 
 [source,shell]
 ....
@@ -328,6 +343,9 @@ Does this look reasonable (y/n)? y
 At this point, `freebsd-update` will attempt to download all files required for the upgrade.
 In some cases, the user may be prompted with questions regarding what to install or how to proceed.
 
+Once all the patches have been downloaded to the local system, they will be applied.
+This process may take a while, depending on the speed and workload of the machine.
+
 When using a custom kernel, the above step will produce a warning similar to the following:
 
 [source,shell]
@@ -341,8 +359,14 @@ before running "/usr/sbin/freebsd-update install"
 This warning may be safely ignored at this point.
 The updated [.filename]#GENERIC# kernel will be used as an intermediate step in the upgrade process.
 
-Once all the patches have been downloaded to the local system, they will be applied.
-This process may take a while, depending on the speed and workload of the machine.
+==== Performing the merge interview
+
+After `freebsd-update` has downloaded the binary patches required for the upgrade and applied them to a staging directory,
+it will then begin an interview process with the user to help manage one of the more difficult phases of an upgrade: upgrading
+the system configuration files. In the lifetime of a typical system the system configuration files start out at their defaults
+when the system is first installed but are often modified, over time, to fit the needs of the system administrator and
+accomodate additional installed software. The user often wishes to preserve these changes, 
+
 Configuration files will then be merged.
 The merging process requires some user intervention as a file may be merged or an editor may appear on screen for a manual merge.
 The results of every successful merge will be shown to the user as the process continues.
@@ -350,7 +374,9 @@ A failed or ignored merge will cause the process to abort.
 Users may wish to make a backup of [.filename]#/etc# and manually merge important files,
 such as [.filename]#master.passwd# or [.filename]#group# at a later time.
 
-==== Commiting to the upgrade
+==== Commiting kernel changes
+
+NEEDS REWORK: Clarify that this step is _kernel only_:
 
 At this stage the system has not yet been altered. Instead, all patching and merging for the upgrade has been performed in a separate, staging directory.
 To continue the upgrade these staging files will need to be committed to their final locations on disk.
